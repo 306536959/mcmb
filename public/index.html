@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Minecraft 启动面板</title>
+	<link rel="stylesheet" href="/styles.css" />
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+	<div class="layout">
+		<aside class="sidebar">
+			<div class="brand">
+				<div class="logo">☘️</div>
+				<div class="brand-text">
+					<strong>MC 面板</strong>
+					<small>服务器控制</small>
+				</div>
+			</div>
+			<nav class="nav">
+				<button class="nav-item active" data-section="console"><span class="icon">🖥️</span><span>控制台</span></button>
+				<button class="nav-item" data-section="players"><span class="icon">👥</span><span>在线玩家</span></button>
+				<button class="nav-item" data-section="settings"><span class="icon">⚙️</span><span>设置</span></button>
+			</nav>
+			<footer class="sidebar-footer">
+				<span class="badge muted">本机面板</span>
+			</footer>
+		</aside>
+
+		<main class="main">
+			<header class="header toolbar">
+				<div class="title-wrap">
+					<h1>控制台</h1>
+					<div class="sub muted">管理你的 Minecraft 服务器</div>
+				</div>
+				<div class="status">
+					<span id="status-indicator" class="badge glow">检查中...</span>
+				</div>
+			</header>
+
+			<section class="section visible" id="section-console">
+				<div class="card glass">
+					<div class="card-header">
+						<div class="card-title">服务器控制</div>
+						<div class="card-actions">
+							<span id="mc-version-badge" class="badge" style="margin-right: 12px; background: linear-gradient(135deg, #76c893, #168aad);">Minecraft版本: 未知</span>
+							<button id="btn-start" class="btn primary">启动</button>
+							<button id="btn-stop" class="btn ghost danger">关闭</button>
+						</div>
+					</div>
+					<div class="card-body">
+						<div class="command">
+							<input id="command-input" type="text" placeholder="输入命令并回车，例如：list 或 say 你好" />
+							<button id="btn-send" class="btn">发送</button>
+						</div>
+						<div class="logs surface">
+							<pre id="log-view" class="mono"></pre>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="section" id="section-players">
+				<div class="card glass">
+					<div class="card-header">
+						<div class="card-title">在线玩家</div>
+						<div class="card-actions">
+							<span class="badge muted">敬请期待</span>
+						</div>
+					</div>
+					<div class="card-body">
+						<p class="muted">此处将展示在线玩家列表、白名单、踢人与封禁等功能。</p>
+					</div>
+				</div>
+			</section>
+
+			<section class="section" id="section-settings">
+				<div class="card glass">
+					<div class="card-header">
+						<div class="card-title">设置</div>
+						<div class="card-actions">
+							<span class="badge muted">占位</span>
+						</div>
+					</div>
+					<div class="card-body grid two">
+						<div class="kv">
+							<div class="k">面板端口</div>
+							<div class="v">server/config.json: port</div>
+						</div>
+						<div class="kv">
+							<div class="k">Java 路径</div>
+							<div class="v" id="v-java-path">server/config.json: javaPath</div>
+						</div>
+						<div class="kv">
+							<div class="k">JVM 参数</div>
+							<div class="v">server/config.json: javaArgs</div>
+						</div>
+						<div class="kv">
+							<div class="k">服务目录/JAR</div>
+							<div class="v" id="v-jar-name">serverDir / serverJarPath</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="card glass" style="margin-top:12px;">
+					<div class="card-header">
+						<div class="card-title">JDK 管理（Linux）</div>
+						<div class="card-actions">
+							<span class="badge muted" id="v-java-version">未知版本</span>
+						</div>
+					</div>
+					<div class="card-body">
+						<div class="command" style="margin-bottom:8px;">
+							<select id="jdk-version" class="btn" style="min-width:140px;">
+								<option value="17">JDK 17</option>
+								<option value="21">JDK 21</option>
+								<option value="11">JDK 11</option>
+								<option value="8">JDK 8</option>
+							</select>
+							<span class="badge success" style="margin:0 10px;">下载到 mcdata/jdks</span>
+							<button id="btn-jdk-apply" class="btn primary">下载JDK</button>
+						</div>
+						<div class="progress-container" id="jdk-progress-container" style="margin-bottom: 12px; display: none;">
+							<div class="progress-header">
+								<span>下载进度：</span>
+								<span id="jdk-progress-text">0%</span>
+							</div>
+							<div class="progress-bar">
+								<div id="jdk-progress-fill" class="progress-fill" style="width: 0%;"></div>
+							</div>
+						</div>
+						<div id="jdk-log-container" class="logs surface" style="max-height: 150px; overflow-y: auto; margin-top: 12px; display: none;">
+							<pre id="jdk-log-view" class="mono"></pre>
+						</div>
+						<p class="muted">在 Linux 环境下将自动下载所选 JDK 到 <code>mcdata/jdks</code> 目录中的 <code>jdk-版本</code> 文件夹。</p>
+					</div>
+				</div>
+
+				<div class="card glass" style="margin-top:12px;">
+					<div class="card-header">
+						<div class="card-title">模组(Mod)管理</div>
+						<div class="card-actions">
+							<span id="mods-count" class="badge muted">0 个模组</span>
+						</div>
+					</div>
+					<div class="card-body">
+						<div class="upload-area" style="border: 2px dashed #ccc; border-radius: 6px; padding: 20px; text-align: center; margin-bottom: 12px; cursor: pointer;">
+							<p>📁 点击或拖拽上传Mod文件 (.jar)</p>
+							<p class="muted" style="margin-top: 8px;">注意：上传功能暂未实现</p>
+						</div>
+						<div id="mods-list" class="mods-list">
+							<p class="muted">暂无模组，服务器启动后会自动生成mods文件夹</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="card glass" style="margin-top:12px;">
+					<div class="card-header">
+						<div class="card-title">资源管理</div>
+						<div class="card-actions">
+							<span class="badge muted">mcdata 目录</span>
+						</div>
+					</div>
+					<div class="card-body">
+						<div class="resource-section">
+							<h3>JDK 文件列表</h3>
+							<div id="jdks-list" class="resource-list">
+								<p class="muted">暂无 JDK 文件</p>
+							</div>
+						</div>
+							
+						<div class="resource-section">
+							<h3>Forge 文件列表</h3>
+							<div id="forgers-list" class="resource-list">
+								<p class="muted">暂无 Forge 文件</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</main>
+	</div>
+
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="/core.js"></script>
+	<script src="/settings.js"></script>
+	<script src="/socket.js"></script>
+	<script src="/app.js"></script>
+</body>
+<style>
+	/* Mod表格样式 */
+	.mods-table {
+		width: 100%;
+		border-collapse: collapse;
+		background: rgba(255, 255, 255, 0.05);
+		border-radius: 6px;
+		overflow: hidden;
+	}
+	.mods-table th,
+	.mods-table td {
+		padding: 12px;
+		text-align: left;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	}
+	.mods-table th {
+		background: rgba(255, 255, 255, 0.08);
+		font-weight: 600;
+	}
+	.mods-table tr:hover {
+		background: rgba(255, 255, 255, 0.08);
+	}
+	.mods-table td:last-child {
+		text-align: right;
+	}
+
+	/* 资源管理样式 */
+	.resource-section {
+		margin-bottom: 20px;
+		background: rgba(255, 255, 255, 0.03);
+		padding: 15px;
+		border-radius: 6px;
+	}
+	.resource-section h3 {
+		margin-top: 0;
+		margin-bottom: 12px;
+		color: #fff;
+		font-size: 16px;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		padding-bottom: 8px;
+	}
+	.resource-list {
+		font-family: monospace;
+	}
+	.resource-list .file-item {
+		padding: 8px 12px;
+		background: rgba(255, 255, 255, 0.02);
+		border-radius: 4px;
+		margin-bottom: 6px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.resource-list .file-name {
+		flex: 1;
+	}
+	.resource-list .file-size {
+		color: rgba(255, 255, 255, 0.6);
+		font-size: 12px;
+		margin-left: 12px;
+	}
+</style>
+</html>
+
