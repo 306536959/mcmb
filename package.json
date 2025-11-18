@@ -1,21 +1,31 @@
 {
-  "name": "frontend",
+  "name": "mc-server-panel",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "description": "Simple Minecraft server control panel (start/stop/logs/commands) for Windows",
+  "main": "server/index.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.1",
-    "typescript": "~5.9.3",
-    "vite": "^7.2.2",
-    "vue-tsc": "^3.1.4"
+    "start": "node server/index.js",
+    "dev:frontend": "npm --prefix . run build:frontend:watch || npm run build:frontend",
+    "build:frontend": "vite build",
+    "build:frontend:watch": "vite build --watch",
+    "build:pkg:linux": "pkg --compress GZip -t node18-linux-x64 --out-path dist server/index.js",
+    "build:pkg:win": "pkg --compress GZip -t node18-win-x64 --out-path dist server/index.js",
+    "build:pkg:all": "npm run build:pkg:linux && npm run build:pkg:win"
   },
   "dependencies": {
-    "socket.io-client": "^4.8.1",
-    "vue": "^3.5.24"
+    "express": "^4.19.2",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "pkg": "^5.8.1"
+  },
+  "pkg": {
+    "assets": [
+      "public/**/*",
+      "server/config.json"
+    ],
+    "outputPath": "dist"
   }
 }
+
